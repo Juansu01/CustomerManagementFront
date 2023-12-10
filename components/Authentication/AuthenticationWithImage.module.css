@@ -1,17 +1,18 @@
 .wrapper {
-  min-height: rem(900px);
-  background-size: cover;
-  background-image: url('../../public/images/harvest_land.png');
+  background-position-x: right;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url('../../public/images/home_img.png');
 }
 
 .form {
   border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
   min-height: rem(900px);
-  max-width: rem(450px);
+  max-width: 41%;
   padding-top: rem(80px);
 
   @media (max-width: var(mantine-breakpoint-sm)) {
-    max-width: 100%;
+    max-width: 41%;
   }
 }
 
