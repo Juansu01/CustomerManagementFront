@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-const BACKEND_URL = process.env.BACKEND_URL;
-
 export const myAxios = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: 'https://customer-management-back-844f0aa2477b.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   },
