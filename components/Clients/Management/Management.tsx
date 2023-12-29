@@ -1,25 +1,38 @@
-import { Card, Text, Group, RingProgress } from '@mantine/core';
+import { Card, Text, Group } from '@mantine/core';
 import { IconNote } from '@tabler/icons-react';
-
 import classes from './CardWithStats.module.css';
 
-const stats = [
-  { title: 'Proximo contacto', value: '12/11/2023' },
-  { title: 'Estado del cliente', value: 'Agendar nuevamente' },
-  { title: 'Tipo de contacto', value: 'Visita de campo' },
-];
+import { ManagementResponse } from '@/utils/api/types/management-res';
 
-export function Management() {
-  const items = stats.map((stat) => (
-    <div key={stat.title}>
-      <Text size="xs" color="dimmed">
-        {stat.title}
-      </Text>
-      <Text fw={500} size="sm">
-        {stat.value}
-      </Text>
-    </div>
-  ));
+export function Management({ management }: { management: ManagementResponse }) {
+  const items = (
+    <>
+      <div>
+        <Text size="xs" color="dimmed">
+          Proximo contacto
+        </Text>
+        <Text fw={500} size="sm">
+          {management.nextContact ?? 'No hay proximo contacto'}
+        </Text>
+      </div>
+      <div>
+        <Text size="xs" color="dimmed">
+          Estado del cliente
+        </Text>
+        <Text fw={500} size="sm">
+          {management.customerStatus}
+        </Text>
+      </div>
+      <div>
+        <Text size="xs" color="dimmed">
+          Tipo de contacto
+        </Text>
+        <Text fw={500} size="sm">
+          {management.contactType}
+        </Text>
+      </div>
+    </>
+  );
 
   return (
     <Card withBorder padding="lg" className={classes.card}>
@@ -35,9 +48,7 @@ export function Management() {
         </Group>
       </Group>
       <Text mt="sm" mb="md" c="dimmed" fz="xs">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.
+        {management.observations ?? 'Sin observaciones.'}
       </Text>
       <Card.Section className={classes.footer}>{items}</Card.Section>
     </Card>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Group, Button, Title } from '@mantine/core';
+import { Modal, Group, Button } from '@mantine/core';
 import { NewClientForm } from './Form';
 
 export function NewClientModal() {

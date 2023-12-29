@@ -13,6 +13,7 @@ export const newClientFields: ClientFields[] = [
   { label: 'Celular', name: 'phone', required: true, placeholder: '123456789' },
   { label: 'Direccion', name: 'address' },
   { label: 'Ciudad', name: 'city' },
+  { label: 'Producto de interes', name: 'product' },
 ];
 
 export const newClientInitialValues: Record<string, string> = {};

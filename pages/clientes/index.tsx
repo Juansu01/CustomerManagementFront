@@ -1,9 +1,16 @@
 import { Title, Center, Box } from '@mantine/core';
+import { useEffect } from 'react';
+import router from 'next/router';
 
 import { ClientTable } from '../../components/Clients/ClientTable/ClientTable';
 import { NewClientModal } from '@/components/Clients/NewClient/Modal';
 
 export default function ClientesHome() {
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) router.push('/');
+  }, []);
   return (
     <>
       <Center>

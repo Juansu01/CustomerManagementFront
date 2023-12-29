@@ -1,48 +1,87 @@
-import { Avatar, Text, Group, Paper } from '@mantine/core';
+import { Avatar, Text, Group, Paper, Center, Modal, Button } from '@mantine/core';
 import { IconPhoneCall, IconAt, IconHome, IconId } from '@tabler/icons-react';
-import classes from './UserInfoIcons.module.css';
+import { useEffect, useState } from 'react';
 
-export function ClientCard({ clientId }: { clientId: string }) {
+import classes from './UserInfoIcons.module.css';
+import { ClientResponse } from '@/utils/api/types/clients-res';
+import { NewManagementForm } from '../Management/NewManagementForm';
+
+export function ClientCard({
+  client,
+  userOwnsClient,
+  onNewManagement,
+}: {
+  client: ClientResponse;
+  userOwnsClient: boolean;
+  onNewManagement: () => void;
+}) {
+  const [slowTransitionOpened, setSlowTransitionOpened] = useState(false);
+
   return (
     <Paper radius="md" withBorder p="lg" bg="var(--mantine-color-body)">
       <Group wrap="nowrap">
         <Avatar
-          src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png"
           size={94}
-          radius="md"
+          src={
+            'https://e7.pngegg.com/pngimages/178/595/png-clipart-user-profile-computer-icons-login-user-avatars-monochrome-black.png'
+          }
+          radius={40}
         />
         <div>
           <Text fz="lg" fw={500} className={classes.name}>
-            Juan Perez
+            {`${client.firstName} ${client.lastName}`}
           </Text>
 
           <Group wrap="nowrap" gap={10} mt={3}>
             <IconAt stroke={1.5} size="1rem" className={classes.icon} />
             <Text fz="xs" c="dimmed">
-              robert@glassbreaker.io
+              {client.email}
             </Text>
           </Group>
 
           <Group wrap="nowrap" gap={10} mt={5}>
             <IconPhoneCall stroke={1.5} size="1rem" className={classes.icon} />
             <Text fz="xs" c="dimmed">
-              +11 (876) 890 56 23
+              {client.phone}
             </Text>
           </Group>
           <Group wrap="nowrap" gap={10} mt={5}>
             <IconHome stroke={1.5} size="1rem" className={classes.icon} />
             <Text fz="xs" c="dimmed">
-              Medellin
+              {`${client.city} - ${client.address}`}
             </Text>
           </Group>
           <Group wrap="nowrap" gap={10} mt={5}>
             <IconId stroke={1.5} size="1rem" className={classes.icon} />
             <Text fz="xs" c="dimmed">
-              {clientId}
+              {client.identification}
             </Text>
           </Group>
         </div>
       </Group>
+      <Center pt={5}>
+        {userOwnsClient && (
+          <Button color="blue" onClick={() => setSlowTransitionOpened(true)}>
+            Agregar Gestion
+          </Button>
+        )}
+        {!userOwnsClient && (
+          <Text fz="lg" fw={500} className={classes.name}>
+            No puedes agregar gestiones a este cliente
+          </Text>
+        )}
+      </Center>
+      <Modal
+        opened={slowTransitionOpened}
+        onClose={() => setSlowTransitionOpened(false)}
+        transitionProps={{ transition: 'rotate-left' }}
+        overlayProps={{
+          backgroundOpacity: 0.55,
+          blur: 3,
+        }}
+      >
+        <NewManagementForm closeModal={setSlowTransitionOpened} onNewManagement={onNewManagement} />
+      </Modal>
     </Paper>
   );
 }

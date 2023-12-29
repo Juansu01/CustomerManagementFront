@@ -1,11 +1,12 @@
-import { useState, useContext } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { Container, Group, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './HeaderSimple.module.css';
 
-import { AuthContext } from '../Context/Context';
+import useAuth from '../hooks/useAuth';
 
 const links = [
   { link: '/', label: 'Inicio' },
@@ -17,59 +18,66 @@ const links = [
 export function HeaderSimple() {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
+  const { isLogged, role } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const { isLogged } = useContext(AuthContext);
-  let items = null;
+  const { isReady } = router;
+  let localRole = '';
 
-  if (isLogged) {
-    items = links.map((link) => (
-      <a
-        key={link.label}
-        href={link.link}
-        className={classes.link}
-        data-active={pathname === link.link || undefined}
-        onClick={(event) => {
-          event.preventDefault();
-          setActive(link.link);
-          try {
-            router.push(link.link);
-          } catch (error) {
-            console.log(error);
-          }
-        }}
-      >
-        {link.label}
-      </a>
-    ));
-  } else {
-    const link = links[0];
-    items = (
-      <a
-        key={link.label}
-        href={link.link}
-        className={classes.link}
-        data-active={active === link.link || undefined}
-        onClick={(event) => {
-          event.preventDefault();
-          setActive(link.link);
-          try {
-            router.push(link.link);
-          } catch (error) {
-            console.log(error);
-          }
-        }}
-      >
-        {link.label}
-      </a>
-    );
-  }
+  useEffect(() => {
+    if (!isReady) return;
+    localRole = localStorage.getItem('role')!;
+
+    console.log(role);
+    setActive(pathname);
+  }, [isReady]);
+
+  const loggetInItems = links.map((link) => (
+    <a
+      key={link.label}
+      href={link.link}
+      className={classes.link}
+      data-active={pathname === link.link || undefined}
+      onClick={(event) => {
+        event.preventDefault();
+        setActive(link.link);
+        try {
+          router.push(link.link);
+        } catch (error) {
+          console.log(error);
+        }
+      }}
+    >
+      {link.label}
+    </a>
+  ));
+
+  const loggetOutItems = (
+    <a
+      key={links[0].label}
+      href={links[0].link}
+      className={classes.link}
+      data-active={active === links[0].link || undefined}
+      onClick={(event) => {
+        event.preventDefault();
+        setActive(links[0].link);
+        try {
+          router.push(links[0].link);
+        } catch (error) {
+          console.log(error);
+        }
+      }}
+    >
+      {links[0].label}
+    </a>
+  );
+
   return (
     <header className={classes.header}>
       <Container size="md" className={classes.inner}>
         <MantineLogo size={28} />
         <Group gap={5} visibleFrom="xs">
-          {items}
+          {isLogged ? loggetInItems : loggetOutItems}
         </Group>
         <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
       </Container>

@@ -1,67 +1,48 @@
-import { Avatar, Badge, Table, Group, Text, Select } from '@mantine/core';
+import { Avatar, Badge, Table, Group, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
 
-import { clients } from '@/dummy_data/clients';
-
-const data = [
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-9.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    role: 'Collaborator',
-    lastActive: '2 days ago',
-    active: true,
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-6.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    role: 'Collaborator',
-    lastActive: '6 days ago',
-    active: true,
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-10.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    role: 'Contractor',
-    lastActive: '2 days ago',
-    active: false,
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    role: 'Contractor',
-    lastActive: '5 days ago',
-    active: true,
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    role: 'Manager',
-    lastActive: '3 days ago',
-    active: false,
-  },
-];
-
-const rolesData = ['Manager', 'Collaborator', 'Contractor'];
+import useAuth from '../hooks/useAuth';
+import { AgendaResponse } from '@/utils/api/types/agenda-res';
+import { backendService } from '@/utils/api/backend.service';
+import { useRouter } from 'next/router';
 
 export function AsesorAgenda() {
-  const rows2 = clients.map((client) => (
-    <Table.Tr key={client.cc}>
+  const { accessToken } = useAuth();
+  const [agenda, setAgenda] = useState<AgendaResponse[]>([]);
+  const router = useRouter();
+
+  const checkExpired = (date: string): boolean => {
+    if (!date) return true;
+    const today = new Date();
+    const expirationDate = new Date(date);
+    return today < expirationDate;
+  };
+
+  useEffect(() => {
+    const fetchAgenda = async () => {
+      let response;
+      if (!accessToken) {
+        response = await backendService.getUserAgenda(localStorage.getItem('accessToken')!);
+      } else {
+        response = await backendService.getUserAgenda(accessToken);
+      }
+
+      if (response) {
+        setAgenda(response);
+      }
+    };
+
+    fetchAgenda();
+  }, []);
+
+  const rows = agenda.map((client) => (
+    <Table.Tr key={client.identification}>
       <Table.Td>
-        <Group gap="sm">
+        <Group
+          gap="sm"
+          styles={{ root: { cursor: 'pointer' } }}
+          onClick={() => router.push(`/clientes/${client.identification}`)}
+        >
           <Avatar
             size={40}
             src={
@@ -94,54 +75,19 @@ export function AsesorAgenda() {
           </div>
         </Group>
       </Table.Td>
-      <Table.Td>Producto 1</Table.Td>
-      <Table.Td>12/10/2023</Table.Td>
+      <Table.Td>{client.product}</Table.Td>
       <Table.Td>
-        {client.expired ? (
+        {client.managements[client.managements.length - 1].nextContact ??
+          'Primer contacto pendiente'}
+      </Table.Td>
+      <Table.Td>
+        {checkExpired(client.managements[client.managements.length - 1].nextContact) ? (
           <Badge fullWidth variant="light">
             Al dia
           </Badge>
         ) : (
           <Badge color="gray" fullWidth variant="light">
             Vencido
-          </Badge>
-        )}
-      </Table.Td>
-    </Table.Tr>
-  ));
-  const rows = data.map((item) => (
-    <Table.Tr key={item.name}>
-      <Table.Td>
-        <Group gap="sm">
-          <Avatar size={40} src={item.avatar} radius={40} />
-          <div>
-            <Text fz="sm" fw={500}>
-              {item.name}
-            </Text>
-            <Text fz="xs" c="dimmed">
-              {item.email}
-            </Text>
-          </div>
-        </Group>
-      </Table.Td>
-
-      <Table.Td>
-        <Select
-          data={rolesData}
-          defaultValue={item.role}
-          variant="unstyled"
-          allowDeselect={false}
-        />
-      </Table.Td>
-      <Table.Td>{item.lastActive}</Table.Td>
-      <Table.Td>
-        {item.active ? (
-          <Badge fullWidth variant="light">
-            Active
-          </Badge>
-        ) : (
-          <Badge color="gray" fullWidth variant="light">
-            Disabled
           </Badge>
         )}
       </Table.Td>
@@ -159,7 +105,7 @@ export function AsesorAgenda() {
             <Table.Th>Estado</Table.Th>
           </Table.Tr>
         </Table.Thead>
-        <Table.Tbody>{rows2}</Table.Tbody>
+        <Table.Tbody>{rows}</Table.Tbody>
       </Table>
     </Table.ScrollContainer>
   );

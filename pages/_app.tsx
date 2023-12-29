@@ -1,17 +1,42 @@
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../theme';
 import { HeaderSimple } from '@/components/SimpleHeader/HeaderSimple';
 import { AuthContext } from '@/components/Context/Context';
-import { useContext } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const authContext = useContext(AuthContext);
+  const [isLogged, setIsLogged] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
+  const [role, setRole] = useState('');
+  const [identification, setIdentification] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLogged(true);
+      setAccessToken(token);
+      setIdentification(localStorage.getItem('identification')!);
+    }
+  }, []);
+
   return (
     <MantineProvider theme={theme}>
-      <AuthContext.Provider value={authContext}>
+      <AuthContext.Provider
+        value={{
+          isLogged,
+          role,
+          setIsLogged,
+          accessToken,
+          setAccessToken,
+          setRole,
+          identification,
+          setIdentification,
+        }}
+      >
         <Head>
           <title>Manejo De Clientes</title>
           <meta

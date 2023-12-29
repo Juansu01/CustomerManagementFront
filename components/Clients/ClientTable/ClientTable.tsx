@@ -1,10 +1,32 @@
-import { Table, Text, Anchor } from '@mantine/core';
+import { Center, Table, Text, Title } from '@mantine/core';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-import { clients } from '@/dummy_data/clients';
+import { backendService } from '@/utils/api/backend.service';
+import { ClientResponse } from '@/utils/api/types/clients-res';
 
 export function ClientTable() {
+  const [loading, setIsLoading] = useState(true);
+  const [clients, setClients] = useState<ClientResponse[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) router.push('/');
+
+    const fetchClients = async () => {
+      const response = await backendService.getUserClients(token!);
+      if (response) {
+        setClients(response);
+      }
+      setIsLoading(false);
+    };
+
+    fetchClients();
+  }, []);
+
   const rows = clients.map((client) => (
-    <Table.Tr key={client.cc}>
+    <Table.Tr key={client.identification}>
       <Table.Td>
         <Text fz="sm" fw={500}>
           {`${client.firstName} ${client.lastName}`}
@@ -12,7 +34,7 @@ export function ClientTable() {
       </Table.Td>
       <Table.Td>
         <Text fz="sm" fw={100}>
-          {client.cc}
+          {client.identification}
         </Text>
       </Table.Td>
       <Table.Td>
@@ -52,8 +74,12 @@ export function ClientTable() {
             <Table.Th />
           </Table.Tr>
         </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
+        {!loading && clients.length > 0 && <Table.Tbody>{rows}</Table.Tbody>}
       </Table>
+      <Center>
+        {loading && <Title pb={'sm'}>Cargando</Title>}
+        {!loading && clients.length === 0 && <Title pb={'sm'}>No tienes clientes</Title>}
+      </Center>
     </Table.ScrollContainer>
   );
 }

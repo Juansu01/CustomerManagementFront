@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   ScrollArea,
@@ -14,12 +14,13 @@ import { IconSelector, IconChevronDown, IconChevronUp, IconSearch } from '@table
 import { useRouter } from 'next/router';
 
 import classes from './TableSort.module.css';
-import { clients } from '@/dummy_data/clients';
+import useAuth from '../../hooks/useAuth';
+import { backendService } from '@/utils/api/backend.service';
 
 interface RowData {
   nombre: string;
   phone: string;
-  cc: string;
+  identification: string;
 }
 
 interface ThProps {
@@ -76,15 +77,7 @@ function sortData(
   );
 }
 
-const data: RowData[] = [];
-
-clients.forEach((client) => {
-  data.push({
-    nombre: `${client.firstName} ${client.lastName}`,
-    phone: client.phone,
-    cc: client.cc,
-  });
-});
+let data: RowData[] = [];
 
 export function ClientSearch() {
   const [search, setSearch] = useState('');
@@ -92,6 +85,27 @@ export function ClientSearch() {
   const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) router.push('/');
+
+    const fetchClients = async () => {
+      const response = await backendService.getAllClients(token!);
+      if (response) {
+        data = [];
+        response.forEach((client) => {
+          data.push({
+            nombre: `${client.firstName} ${client.lastName}`,
+            phone: client.phone,
+            identification: client.identification,
+          });
+        });
+        setSortedData(sortData(data, { sortBy, reversed: reverseSortDirection, search }));
+      }
+    };
+    fetchClients();
+  }, []);
 
   const setSorting = (field: keyof RowData) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
@@ -107,10 +121,14 @@ export function ClientSearch() {
   };
 
   const rows = sortedData.map((row) => (
-    <Table.Tr key={row.nombre} onClick={(event) => router.push(`/clientes/${row.cc}`)}>
+    <Table.Tr
+      style={{ cursor: 'pointer' }}
+      key={row.identification}
+      onClick={(event) => router.push(`/clientes/${row.identification}`)}
+    >
       <Table.Td>{row.nombre}</Table.Td>
       <Table.Td>{row.phone}</Table.Td>
-      <Table.Td>{row.cc}</Table.Td>
+      <Table.Td>{row.identification}</Table.Td>
     </Table.Tr>
   ));
 
@@ -141,9 +159,9 @@ export function ClientSearch() {
               Celular
             </Th>
             <Th
-              sorted={sortBy === 'cc'}
+              sorted={sortBy === 'identification'}
               reversed={reverseSortDirection}
-              onSort={() => setSorting('cc')}
+              onSort={() => setSorting('identification')}
             >
               Cedula
             </Th>
@@ -154,7 +172,7 @@ export function ClientSearch() {
             rows
           ) : (
             <Table.Tr>
-              <Table.Td colSpan={Object.keys(data[0]).length}>
+              <Table.Td colSpan={3}>
                 <Text fw={500} ta="center">
                   Nothing found
                 </Text>

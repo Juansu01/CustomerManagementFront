@@ -1,15 +1,26 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
-import { Consultant } from '@/dummy_data/consultants';
-
-export interface AuthContext {
-  user: Consultant | null;
+export interface AuthContextI {
+  accessToken: string | null;
+  role: string | null;
   isLogged: boolean;
+  identification: string;
+  setIsLogged: Dispatch<SetStateAction<boolean>>;
+  setAccessToken: Dispatch<SetStateAction<string>>;
+  setRole: Dispatch<SetStateAction<string>>;
+  setIdentification: Dispatch<SetStateAction<string>>;
 }
 
-const defaultAuthContext: AuthContext = {
-  user: null,
+const defaultAuthContext: AuthContextI = {
+  accessToken: null,
+  role: null,
   isLogged: false,
+  identification: '',
+  setIsLogged: () => {},
+  setAccessToken: () => {},
+  setRole: () => {},
+  setIdentification: () => {},
 };
 
 export const AuthContext = createContext(defaultAuthContext);
