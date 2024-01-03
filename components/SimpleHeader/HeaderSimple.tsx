@@ -18,21 +18,17 @@ const links = [
 export function HeaderSimple() {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
-  const { isLogged, role } = useAuth();
+  const { isLogged } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const { isReady } = router;
-  let localRole = '';
 
   useEffect(() => {
     if (!isReady) return;
-    localRole = localStorage.getItem('role')!;
-
-    console.log(role);
     setActive(pathname);
   }, [isReady]);
 
-  const loggetInItems = links.map((link) => (
+  const loggedInItems = links.map((link) => (
     <a
       key={link.label}
       href={link.link}
@@ -52,7 +48,7 @@ export function HeaderSimple() {
     </a>
   ));
 
-  const loggetOutItems = (
+  const loggedOutItems = (
     <a
       key={links[0].label}
       href={links[0].link}
@@ -77,7 +73,7 @@ export function HeaderSimple() {
       <Container size="md" className={classes.inner}>
         <MantineLogo size={28} />
         <Group gap={5} visibleFrom="xs">
-          {isLogged ? loggetInItems : loggetOutItems}
+          {isLogged ? loggedInItems : loggedOutItems}
         </Group>
         <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
       </Container>

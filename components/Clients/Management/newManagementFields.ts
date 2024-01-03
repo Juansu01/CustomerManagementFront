@@ -25,6 +25,6 @@ export const newManagementFields: ManagementFields[] = [
 export const newManagementInitialValues = {
   contactType: '',
   customerStatus: '',
-  observations: '',
-  nextContact: '',
+  observations: null,
+  nextContact: new Date(),
 };

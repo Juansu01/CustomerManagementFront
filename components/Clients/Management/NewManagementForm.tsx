@@ -73,8 +73,9 @@ export function NewManagementForm({
           pt={5}
           label="Tipo de contacto"
           placeholder="Selecciona un tipo de contacto"
+          withAsterisk
           name="contactType"
-          data={['Evento', 'Página web', 'Visita de campo', 'Tienda']}
+          data={['Evento', 'Página web', 'Visita de campo', 'Tienda', 'Whatsapp']}
           {...form.getInputProps('contactType')}
         />
 
@@ -83,6 +84,7 @@ export function NewManagementForm({
           label="Estado del cliente"
           placeholder="Selecciona un estado"
           name="customerStatus"
+          withAsterisk
           data={[
             'Pendiente primer contacto',
             'Primera llamada',

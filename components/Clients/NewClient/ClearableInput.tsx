@@ -13,12 +13,14 @@ export function ClearableInput({
   inputName,
   withAsterisk,
   placeHolder,
+  type,
 }: {
   form: UseFormReturnType<Record<string, string>>;
   label: string;
   inputName: string;
   withAsterisk?: boolean;
   placeHolder?: string;
+  type?: string;
 }) {
   return (
     <>

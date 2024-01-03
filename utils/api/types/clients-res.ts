@@ -11,6 +11,7 @@ export interface ClientResponse {
   city: string;
   product: string;
   managements: ManagementResponse[];
+  purchaseProjection: number;
   user: {
     identification: string;
   };

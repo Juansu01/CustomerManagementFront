@@ -1,10 +1,13 @@
 import { myAxios } from './axios';
+import { AxiosError } from 'axios';
 
 import { LogInResponse } from './types/log-in-res';
 import { ClientResponse } from './types/clients-res';
 import { NewClientReq } from './types/new-client-req';
 import { AgendaResponse } from './types/agenda-res';
 import { NewManagementReq } from './types/new-management-req';
+import { UserInfoRes } from './types/user-info-res';
+import { UserInfo } from './types/user-info';
 
 class BackendService {
   private axios = myAxios;
@@ -119,6 +122,33 @@ class BackendService {
       console.log(error);
       return undefined;
     }
+  }
+
+  public async getUserInfo(token: string): Promise<UserInfo> {
+    let userInfo: UserInfo | undefined = undefined;
+
+    try {
+      const response = await this.axios.get<UserInfoRes>('users/my-info', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      userInfo = {
+        userInfo: { ...response.data },
+        isError: false,
+        message: '',
+      };
+    } catch (error: unknown) {
+      console.log(error);
+
+      const axiosError = error as AxiosError<{ message: string }>;
+
+      userInfo = {
+        isError: true,
+        message: axiosError.response?.data.message,
+      };
+    }
+    return userInfo;
   }
 }
 

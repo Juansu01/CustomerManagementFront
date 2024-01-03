@@ -4,7 +4,7 @@ export interface Client {
   lastName: string;
   phone: string;
   address: string;
-  email: string;
+  email: string | null;
   city: string;
   product: string;
   consultant: string;

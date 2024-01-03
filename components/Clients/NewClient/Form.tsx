@@ -1,4 +1,4 @@
-import { Button, Group, Box, Title } from '@mantine/core';
+import { Button, Group, Box, Title, NumberInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ClearableInput } from './ClearableInput';
 import { newClientFields, newClientInitialValues } from './newClientFields';
@@ -16,7 +16,9 @@ export function NewClientForm({ closeModal }: { closeModal: Dispatch<SetStateAct
   const form = useForm({
     initialValues: newClientInitialValues,
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Correo invalido'),
+      email: (value) => {
+        if (value) return /^\S+@\S+$/.test(value) ? null : 'Correo invalido';
+      },
     },
   });
   const router = useRouter();
@@ -25,6 +27,7 @@ export function NewClientForm({ closeModal }: { closeModal: Dispatch<SetStateAct
     const response = await backendService.createClient(accessToken!, {
       ...values,
       identification: values.cedula,
+      email: values.email?.length ? values.email : null,
     });
 
     if (response) {
@@ -47,6 +50,17 @@ export function NewClientForm({ closeModal }: { closeModal: Dispatch<SetStateAct
         /> */}
 
         {newClientFields.map((field) => {
+          if (field.name === 'purchaseProjection')
+            return (
+              <NumberInput
+                label={field.label}
+                key={field.label}
+                name={field.name}
+                thousandSeparator=","
+                defaultValue={1_000_000}
+                {...form.getInputProps(field.name)}
+              />
+            );
           return (
             <ClearableInput
               key={field.label}

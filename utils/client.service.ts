@@ -4,11 +4,12 @@ export interface ClientPayload {
   address: string;
   cedula: string;
   city: string;
-  email: string;
+  email: string | null;
   firstName: string;
   lastName: string;
   phone: string;
   product: string;
+  purchaseProjection: number;
 }
 
 export class ClientService {

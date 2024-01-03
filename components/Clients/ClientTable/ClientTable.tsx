@@ -26,7 +26,15 @@ export function ClientTable() {
   }, []);
 
   const rows = clients.map((client) => (
-    <Table.Tr key={client.identification}>
+    <Table.Tr
+      key={client.identification}
+      onClick={(event) => router.push(`/clientes/${client.identification}`)}
+      styles={{
+        tr: {
+          cursor: 'pointer',
+        },
+      }}
+    >
       <Table.Td>
         <Text fz="sm" fw={500}>
           {`${client.firstName} ${client.lastName}`}
@@ -57,6 +65,11 @@ export function ClientTable() {
           {client.product}
         </Text>
       </Table.Td>
+      <Table.Td>
+        <Text fz="sm" fw={100}>
+          {client.purchaseProjection}
+        </Text>
+      </Table.Td>
     </Table.Tr>
   ));
 
@@ -71,6 +84,7 @@ export function ClientTable() {
             <Table.Th>Municipio</Table.Th>
             <Table.Th>Correo Electronico</Table.Th>
             <Table.Th>Producto de interes</Table.Th>
+            <Table.Th>Proyeccion de compra</Table.Th>
             <Table.Th />
           </Table.Tr>
         </Table.Thead>

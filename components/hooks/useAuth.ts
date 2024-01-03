@@ -19,8 +19,6 @@ const useAuth = () => {
     const logInRes = await backendService.logIn(identification, password);
     if (logInRes) {
       localStorage.setItem('accessToken', logInRes.accessToken);
-      localStorage.setItem('identification', logInRes.identification);
-      localStorage.setItem('role', logInRes.role);
       setIsLogged(true);
       setAccessToken(logInRes.accessToken);
       setRole(logInRes.role);
